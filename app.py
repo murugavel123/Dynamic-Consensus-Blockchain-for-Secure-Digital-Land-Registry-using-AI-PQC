@@ -18,12 +18,12 @@ PQC_PUBLIC_KEY, PQC_PRIVATE_KEY = algo.keygen()
 
 
 # --- Global Configuration and File Paths (Simplified for execution) ---
-CREDENTIALS_FILE = r"D:\PW_II\Review 1\User_credentials.xlsx - Sheet1.csv"
-MODEL_PATH = r"D:\PW_II\Review 1\decision_tree_consensus.pkl"
-LABEL_ENCODER_PATH = r"D:\PW_II\Review 1\label_encoder.pkl"
-DATA_PATH = r"D:\PW_II\Review 1\blockchain_traffic_trafficsim.csv"
+CREDENTIALS_FILE = r"D:\PW_II\Review 1\User_Credential.csv"
+MODEL_PATH = r"D:\PW_II\Review 1\FL_Random_Forest\federated_rf_global_model.pkl"
+LABEL_ENCODER_PATH = r"D:\PW_II\Review 1\FL_Random_Forest\fed_label_encoder.pkl"
+DATA_PATH = r"D:\PW_II\Review 1\Network_Metrics_Dataset.csv"
 
-NETWORK_STATE_FILE = r"D:\PW_II\Review 1\network_state.json" # New file for state persistence
+NETWORK_STATE_FILE = r"D:\PW_II\Review 1\Blockchain_Ledger.json" # New file for state persistence
 USERS: Dict[str, str] = {} # {username: hashed_password}
 MAX_NODES = 5
 
