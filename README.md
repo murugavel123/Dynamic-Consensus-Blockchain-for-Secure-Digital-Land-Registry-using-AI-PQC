@@ -14,7 +14,7 @@ This combination of technologies makes the system **secure, transparent, resilie
 
 ---
 
-## 💡 What It Does
+## What It Does
 
 Traditional land registry systems are often slow, paper-based, and vulnerable to tampering or fraud. This project demonstrates an innovative approach by:
 
@@ -28,18 +28,18 @@ This makes the platform suitable as a **proof-of-concept for modern, secure, and
 
 ---
 
-## 📌 Features At a Glance
+## Features At a Glance
 
-✔ Adaptive consensus selection using real-time AI
-✔ Post-quantum digital signatures for transaction integrity
-✔ Multi-node blockchain simulator
-✔ Decentralized user approval and governance
-✔ Persistent state saving and recovery
-✔ Land transaction queuing and live ledger display
+* Adaptive consensus selection using real-time AI
+* Post-quantum digital signatures for transaction integrity
+* Multi-node blockchain simulator
+* Decentralized user approval and governance
+* Persistent state saving and recovery
+* Land transaction queuing and live ledger display
 
 ---
 
-## 🧠 Why It Matters
+## Why It Matters
 
 By blending **AI with blockchain and advanced cryptographic techniques**, this project goes beyond static systems. It simulates a world where:
 
