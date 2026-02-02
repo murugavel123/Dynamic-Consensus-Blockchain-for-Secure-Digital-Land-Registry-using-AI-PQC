@@ -52,7 +52,7 @@ This isn’t just code — it’s a **vision for future digital infrastructure**
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 * **Python & Flask** — backend and web server
 * **Machine Learning** — dynamic consensus prediction
@@ -62,7 +62,7 @@ This isn’t just code — it’s a **vision for future digital infrastructure**
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 1. **Clone this repository**
 
@@ -92,7 +92,7 @@ This isn’t just code — it’s a **vision for future digital infrastructure**
 
 ---
 
-## 📘 How It Works
+## How It Works
 
 1. **Users sign up/login** — accounts can be approved by community voting.
 2. **Land transactions are submitted** with PDF documents.
@@ -103,7 +103,7 @@ This isn’t just code — it’s a **vision for future digital infrastructure**
 
 ---
 
-## 👥 Governance & Community
+## Governance & Community
 
 Instead of a central administrator, this platform uses a **peer-review governance model** where existing participants:
 
@@ -115,7 +115,7 @@ This reflects real decentralized decision-making.
 
 ---
 
-## 🧪 Use Cases
+## Use Cases
 
 * Proof of concept for **government land registries**
 * Testing **adaptive consensus algorithms**
@@ -124,7 +124,7 @@ This reflects real decentralized decision-making.
 
 ---
 
-## 📄 License
+## License
 
 This project is open-source and free to use under the [MIT License](LICENSE).
 
