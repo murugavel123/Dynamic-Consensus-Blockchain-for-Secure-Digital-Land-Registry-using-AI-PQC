@@ -19,8 +19,9 @@ PQC_PUBLIC_KEY, PQC_PRIVATE_KEY = algo.keygen()
 
 # --- Global Configuration and File Paths (Simplified for execution) ---
 CREDENTIALS_FILE = r"D:\PW_II\Review 1\User_Credential.csv"
-MODEL_PATH = r"D:\PW_II\Review 1\FL_Random_Forest\federated_rf_global_model.pkl"
-LABEL_ENCODER_PATH = r"D:\PW_II\Review 1\FL_Random_Forest\fed_label_encoder.pkl"
+MODEL_PATH = r"D:\PW_II\Review 1\FL_SGD\federated_sgd_global_model.pkl"
+LABEL_ENCODER_PATH = r"D:\PW_II\Review 1\FL_SGD\fed_label_encoder.pkl"
+SCALER_PATH = r"D:\PW_II\Review 1\FL_SGD\fed_scaler.pkl"
 DATA_PATH = r"D:\PW_II\Review 1\Network_Metrics_Dataset.csv"
 
 NETWORK_STATE_FILE = r"D:\PW_II\Review 1\Blockchain_Ledger.json" # New file for state persistence
@@ -87,7 +88,8 @@ try:
     model = None
     label_encoder = None
     df_traffic = None
-    
+    scaler = None
+
     ML_EXPECTED_FEATURES = [
         'node_count', 
         'network_latency_ms', 
@@ -100,20 +102,24 @@ try:
     ]
     MODEL_FEATURES = []
 
-    if os.path.exists(MODEL_PATH) and os.path.exists(LABEL_ENCODER_PATH) and os.path.exists(DATA_PATH):
+    if os.path.exists(MODEL_PATH) and os.path.exists(LABEL_ENCODER_PATH) and os.path.exists(DATA_PATH) and os.path.exists(SCALER_PATH):
         try:
             model = joblib.load(MODEL_PATH)
             label_encoder = joblib.load(LABEL_ENCODER_PATH)
+            scaler = joblib.load(SCALER_PATH)
+
             df_traffic = pd.read_csv(DATA_PATH)
             MODEL_FEATURES = ML_EXPECTED_FEATURES
-            
+
             if not all(feature in df_traffic.columns for feature in ML_EXPECTED_FEATURES):
-                print("❌ Error: Loaded data is missing one or more expected ML features.")
+                print("❌ Missing ML features.")
             else:
                 model_ready = True
-                print("🧠 ML Model and data loaded successfully. Dynamic Consensus Active.")
+                print("🧠 Federated SGD model loaded. Dynamic consensus active.")
+
         except Exception as e:
             print(f"⚠️ Failed to load ML assets: {e}")
+
     else:
         print("⚠️ ML files not found. Running in static consensus mode.")
 
@@ -784,7 +790,8 @@ def add_land_tx():
         try:
             random_row = df_traffic.sample(n=1)
             features_df = random_row[MODEL_FEATURES]
-            prediction = model.predict(features_df.values)[0]
+            scaled_features = scaler.transform(features_df.values)
+            prediction = model.predict(scaled_features)[0]
             predicted_consensus = label_encoder.inverse_transform([prediction])[0]
             network.set_consensus(predicted_consensus)
         except:
