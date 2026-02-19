@@ -18,13 +18,14 @@ PQC_PUBLIC_KEY, PQC_PRIVATE_KEY = algo.keygen()
 
 
 # --- Global Configuration and File Paths (Simplified for execution) ---
-CREDENTIALS_FILE = r"D:\PW_II\Review 1\User_Credential.csv"
-MODEL_PATH = r"D:\PW_II\Review 1\FL_SGD\federated_sgd_global_model.pkl"
-LABEL_ENCODER_PATH = r"D:\PW_II\Review 1\FL_SGD\fed_label_encoder.pkl"
-SCALER_PATH = r"D:\PW_II\Review 1\FL_SGD\fed_scaler.pkl"
-DATA_PATH = r"D:\PW_II\Review 1\Dataset\Current_Network_Metrics.csv"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CREDENTIALS_FILE = os.path.join(BASE_DIR, "User_Credential.csv")
+MODEL_PATH = os.path.join(BASE_DIR, "FL_SGD", "federated_sgd_global_model.pkl")
+LABEL_ENCODER_PATH = os.path.join(BASE_DIR, "FL_SGD", "fed_label_encoder.pkl")
+SCALER_PATH = os.path.join(BASE_DIR, "FL_SGD", "fed_scaler.pkl")
+DATA_PATH = os.path.join(BASE_DIR, "Dataset", "Current_Network_Metrics.csv")
 
-NETWORK_STATE_FILE = r"D:\PW_II\Review 1\Blockchain_Ledger.json" # New file for state persistence
+NETWORK_STATE_FILE = os.path.join(BASE_DIR, "Blockchain_Ledger.json") # New file for state persistence
 USERS: Dict[str, str] = {} # {username: hashed_password}
 MAX_NODES = 5
 
@@ -493,6 +494,7 @@ def load_network_state():
             print(f"❌ Error loading network state: {e}. Reinitializing network.")
             network = Network() # Reset on failure
 
+    # Always ensure default users are set up
     ensure_default_users()
 
 def online_update(features_scaled, true_label_str):
@@ -529,7 +531,8 @@ def ensure_default_users():
     # -----------------------------
     default_users = {
         'Sengathir': '12245',
-        'UserB': 'defaultpass'
+        'UserB': 'defaultpass',
+        'vishal': 'vishal@123'
     }
 
     credentials_changed = False
@@ -541,6 +544,7 @@ def ensure_default_users():
 
     if credentials_changed:
         save_users_to_csv()
+        print(f"✅ Initialized {len(default_users)} default users.")
 
     # -----------------------------
     # 2. Ensure network exists
@@ -549,18 +553,46 @@ def ensure_default_users():
         load_network_state()   # initializes `network`
 
     # -----------------------------
-    # 3. Ensure minimum 2 active users
+    # 3. Ensure minimum 2 active users (these are founders)
     # -----------------------------
+    initial_count = len(network.active_users)
+    
     for username in default_users:
-        if username in USERS and username not in network.active_users:
+        if username in USERS and username not in network.active_users and username not in network.pending_users:
             network.active_users[username] = True
+            print(f"✅ Activated default user: {username}")
+
+    # If first time setup, also add them to nodes so they can participate
+    for username in default_users:
+        if username in USERS and username not in network.active_users and username in network.pending_users:
+            # Move from pending to active
+            del network.pending_users[username]
+            network.active_users[username] = True
+            print(f"✅ Promoted pending user to active: {username}")
+
+    # Add these users as nodes if they're not already
+    for i, username in enumerate(default_users):
+        node_name = f"Node-{username}"
+        if username in network.active_users and node_name not in network.nodes:
+            network.add_node(node_name, stake=200 + (i * 100), is_initial=(i == 0))
+            print(f"✅ Added node for user: {username}")
 
     # -----------------------------
     # 4. Prune invalid active users
     # -----------------------------
     for user in list(network.active_users.keys()):
-        if user not in USERS or user in network.pending_users:
+        if user not in USERS:
             del network.active_users[user]
+
+    # Remove from pending if already active
+    for user in list(network.pending_users.keys()):
+        if user in network.active_users:
+            del network.pending_users[user]
+
+    # Print status
+    if initial_count != len(network.active_users):
+        print(f"👥 Active users: {list(network.active_users.keys())}")
+        print(f"⏳ Pending users: {list(network.pending_users.keys())}")
 
     # -----------------------------
     # 5. Persist valid state
@@ -591,7 +623,7 @@ def persist_action(func):
 def check_login():
     """Checks if the user is logged in before allowing access to app routes."""
     # Exclude login, signup, and static files
-    if request.path in ['/login', '/signup', '/'] or request.path.startswith('/static'):
+    if request.path in ['/login', '/signup'] or request.path.startswith('/static') or request.path.startswith('/api'):
         return
     if 'logged_in' not in session:
         return redirect(url_for('login'))
@@ -663,6 +695,12 @@ def index():
     load_network_state() # Load state before rendering
     if 'logged_in' not in session:
         return redirect(url_for('login'))
+    
+    # Allow both active and pending users to access the interface
+    username = session.get('username')
+    if username not in network.active_users and username not in network.pending_users and username not in USERS:
+        return redirect(url_for('login'))
+    
     return render_template_string(INDEX_HTML)
 
 # --- Simulation API Routes ---
@@ -788,7 +826,14 @@ def remove_node():
 @app.route('/api/add_land_tx', methods=['POST'])
 @persist_action
 def add_land_tx():
-    old_owner = session.get('username', 'Anonymous')
+    current_user = session.get('username', 'Anonymous')
+    
+    # Check if user is active (approved by community)
+    load_network_state()
+    if current_user not in network.active_users:
+        return jsonify({'success': False, 'message': f'User "{current_user}" is not yet approved by the community. Please wait for approval.'}), 403
+    
+    old_owner = current_user
     new_owner = request.form.get('new_owner')
     land_price = int(request.form.get('land_price', 0))
     pdf_file = request.files.get('pdf')
@@ -841,7 +886,7 @@ def add_land_tx():
 
     return jsonify({
         'success': True,
-        'message': 'Land transaction added.',
+        'message': 'Land transaction added to queue.',
         'transaction': result
     })
 
@@ -859,6 +904,13 @@ def set_consensus():
 @app.route('/api/trigger', methods=['POST'])
 @persist_action
 def trigger_consensus():
+    current_user = session.get('username', 'Anonymous')
+    
+    # Check if user is active (approved by community)
+    load_network_state()
+    if current_user not in network.active_users:
+        return jsonify({'success': False, 'message': f'Only approved members can trigger consensus. Your account is still pending community approval.'}), 403
+    
     result = network.run_consensus()
     return jsonify(result)
 
