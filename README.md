@@ -31,36 +31,36 @@ This makes the platform suitable as a **proof-of-concept for modern, secure, and
 ## Features At a Glance
 
 ### Core Functionality
-✅ **User Management**
+**User Management**
 - Secure account registration with hashed passwords (scrypt)
 - Community-based approval system with voting
 - Founder users with immediate active status
 - Role-based access control
 
-✅ **Land Transaction Management**
+**Land Transaction Management**
 - Upload land deed PDFs with automatic hash verification
 - PQC digital signatures for transaction integrity
 - Transaction queuing system
 - Real-time transaction queue display
 
-✅ **Blockchain & Consensus**
+**Blockchain & Consensus**
 - Multi-algorithm consensus support (PoW, PoS, PBFT, Raft, HotStuff)
 - ML-based dynamic consensus selection (when models available)
 - Immutable ledger with cryptographic verification
 - Multi-node blockchain simulator
 
-✅ **Governance & Transparency**
+**Governance & Transparency**
 - Decentralized peer-review system
 - Live governance dashboard showing pending approvals
 - Voting progress tracker
 - Transparent ledger display with full transaction details
 
-✅ **Data Persistence**
+**Data Persistence**
 - Automatic file saving (CSV + JSON)
 - State recovery on application restart
 - No hardcoded paths — fully portable
 
-✅ **User Interface**
+**User Interface**
 - Modern, responsive design with Tailwind CSS
 - Real-time dashboard updates
 - Clear error messages and status indicators
@@ -115,7 +115,7 @@ This isn’t just code — it’s a **vision for future digital infrastructure**
 
 3. **Project Structure**
    
-   ⚠️ **Important**: The application uses **relative paths** from the project root directory. Ensure all files are in their proper locations:
+   **Important**: The application uses **relative paths** from the project root directory. Ensure all files are in their proper locations:
 
    ```
    project-root/
@@ -132,13 +132,13 @@ This isn’t just code — it’s a **vision for future digital infrastructure**
    └── DecisionTree/, FL_Random_Forest/   (other ML modules)
    ```
 
-   **✅ Good**: Run from project root directory
+   **Good**: Run from project root directory
    ```bash
    cd "D:\Project Work - II\Dynamic-Consensus-Blockchain-for-Secure-Digital-Land-Registry-using-AI-PQC"
    python app.py
    ```
 
-   **❌ Bad**: Don't run from a different directory or with hardcoded paths
+   **Bad**: Don't run from a different directory or with hardcoded paths
 
 4. **Run the application**
 
@@ -147,10 +147,10 @@ This isn’t just code — it’s a **vision for future digital infrastructure**
    ```
 
    The app will:
-   - ✅ Automatically create `User_Credential.csv` if it doesn't exist
-   - ✅ Automatically create `Blockchain_Ledger.json` for blockchain persistence
-   - ✅ Initialize default founder users (Sengathir, UserB, vishal)
-   - ✅ Start Flask server on `http://127.0.0.1:5000`
+   - Automatically create `User_Credential.csv` if it doesn't exist
+   - Automatically create `Blockchain_Ledger.json` for blockchain persistence
+   - Initialize default founder users (Sengathir, UserB, vishal)
+   - Start Flask server on `http://127.0.0.1:5000`
 
 5. **Access the application**
 
@@ -180,13 +180,13 @@ When you run the app for the first time:
 
 ### Important Notes
 
-⚠️ **Path Configuration**:
+**Path Configuration**:
 - All file paths are now **relative to the project root directory**
-- ✅ NO hardcoded paths (like `D:\PW_II\Review 1\`)
-- ✅ App works correctly when run from the project directory
-- ✅ Data persists between app restarts in same directory
+- NO hardcoded paths (like `D:\PW_II\Review 1\`)
+- App works correctly when run from the project directory
+- Data persists between app restarts in same directory
 
-⚠️ **ML Models** (Optional):
+**ML Models** (Optional):
 - If ML model files are missing, app runs in **static consensus mode**
 - This is normal — core functionality works perfectly without ML
 - To enable dynamic ML-based consensus, place model files in `FL_SGD/` directory:
